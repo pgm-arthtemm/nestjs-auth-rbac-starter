@@ -13,7 +13,7 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('email') email: string) {
-    return this.usersService.findOne(email);
+  findOne(@Args('username') username: string) {
+    return this.usersService.findOne(username);
   }
 }

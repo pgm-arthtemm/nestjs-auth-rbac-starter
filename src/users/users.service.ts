@@ -14,7 +14,7 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  findOne(email: string): Promise<User> {
-    return this.usersRespository.findOne({ email });
+  findOne(username: string): Promise<User> {
+    return this.usersRespository.findOne({ username });
   }
 }
