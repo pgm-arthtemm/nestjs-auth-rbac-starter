@@ -19,8 +19,9 @@ input LoginUserInput {
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
+  create(createUserInput: CreateUserInput!): User!
   login(loginUserInput: LoginUserInput!): LoginResponse!
+  signup(signupUserInput: CreateUserInput!): User!
 }
 
 type Query {
@@ -31,5 +32,6 @@ type User {
   email: String!
   id: Int!
   password: String!
+  role: String!
   username: String!
 }

@@ -11,7 +11,8 @@ export class UsersService {
   ) {}
 
   create(createUserInput: CreateUserInput) {
-    return 'This action adds a new user';
+    const user = this.usersRespository.create(createUserInput);
+    return this.usersRespository.save(user);
   }
 
   findOne(username: string): Promise<User> {
