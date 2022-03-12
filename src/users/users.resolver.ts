@@ -18,4 +18,9 @@ export class UsersResolver {
   findOne(@Args('username') username: string): Promise<User> {
     return this.usersService.findOne(username);
   }
+
+  @Query(() => User, { name: 'userByEmail' })
+  findByEmail(@Args('email') email: string): Promise<User> {
+    return this.usersService.findByEmail(email);
+  }
 }

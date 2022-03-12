@@ -21,11 +21,12 @@ input LoginUserInput {
 type Mutation {
   create(createUserInput: CreateUserInput!): User!
   login(loginUserInput: LoginUserInput!): LoginResponse!
-  signup(signupUserInput: CreateUserInput!): User!
+  signUp(signUpUserInput: CreateUserInput!): User!
 }
 
 type Query {
   user(username: String!): User!
+  userByEmail(email: String!): User!
 }
 
 type User {

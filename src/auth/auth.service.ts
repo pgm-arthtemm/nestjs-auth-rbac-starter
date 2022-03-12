@@ -22,21 +22,6 @@ export class AuthService {
     }
   }
 
-  async signup(signupUserInput: CreateUserInput) {
-    const user = await this.usersService.findOne(signupUserInput.email);
-
-    if (user) {
-      throw new Error('User already exists');
-    }
-
-    const password = await bcrypt.hash(signupUserInput.password, 10);
-
-    return this.usersService.create({
-      ...signupUserInput,
-      password,
-    });
-  }
-
   async login(user: User) {
     const { password, ...result } = user;
 
@@ -47,5 +32,20 @@ export class AuthService {
       }),
       user: result,
     };
+  }
+
+  async signUp(signUpUserInput: CreateUserInput) {
+    const user = await this.usersService.findByEmail(signUpUserInput.email);
+
+    if (user) {
+      throw new Error('User already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(signUpUserInput.password, 10);
+
+    return this.usersService.create({
+      ...signUpUserInput,
+      password: hashedPassword,
+    });
   }
 }
