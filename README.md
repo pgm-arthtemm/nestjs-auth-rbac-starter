@@ -1,73 +1,96 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# NestJS Authentication and Role Based Access Control with GraphQL example
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[![License](https://img.shields.io/github/license/saluki/nestjs-template.svg)](https://github.com/pgm-arthtemm/nestjs-auth-rbac-starter/blob/main/LICENSE)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Quick starter template for a [NestJS](https://nestjs.com/) **GraphQL** API with **user authentication** and **role based access control**.  
+This template uses:
 
-## Description
+- GraphQL
+- TypeORM
+- Postgres
+- Apollo Server
+- Passport-JWT
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Setup
 
-## Installation
+Start by cloning the repository into your local workstation:
 
-```bash
-$ npm install
+```sh
+git clone https://github.com/pgm-arthtemm/nestjs-auth-rbac-starter.git my-project
 ```
 
-## Running the app
+This project is made with pnpm. If you use yarn of npm, remove the pnpm-lock.yaml file and run `yarn add` or `npm install`
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```sh
+cd ./my-project
+pnpm install
 ```
 
-## Test
+Create two `.env` files in the root of the project:
 
-```bash
-# unit tests
-$ npm run test
+- `.env.development`
+- `.env.production`
 
-# e2e tests
-$ npm run test:e2e
+In the `.env.development` file, put the environment variables used in **development**.  
+The `.env.production` file will contain all the environment variables for **production**.
 
-# test coverage
-$ npm run test:cov
+To make connection with the database, fill in the right environment variables in the app.module.ts.
+
+## Usage
+
+When the database is connected, you can start up the server by running `pnpm start:dev`.
+A GraphQL schema will be generated. This will contain a Users table and all the dto's for user authentication.
+
+To register a user:
+
+- Go to the [GraphQL Playground](http://localhost:4000/graphql)
+- Run the signup mutation using `email`, `password` and `username` variables
+
+Running this mutation will create a new entry in the Users table **if the email is not already registered**.  
+The default Role will be set as USER. you can change this by creating a new role in the `roles.enum.ts` and chaning the default role in the `user.entity.ts` file.
+
+To login a user:
+
+- Go to the [GraphQL Playground](http://localhost:4000/graphql)
+- Run the login mutation using `email` and `password` variables
+
+Running this mutation will check the credentials of the user, if the credentials are correct, the mutation will return a JWT.
+This token contains the user information, including the user role.
+
+## Jwt Guards
+
+To protect an API route, you can use a **JwtGuard**. This guard checks if the user has a valid JWT. You can apply this guard to the **UseGuard decorator** to queries and mutations inside a resolver.
+In this example the findAll users query inside the `users.resolver.ts` file is protected using this guard.
+
+```js
+  @Query(() => [User], { name: 'users' })
+  @UseGuards(JwtAuthGuard)
+  findAll(): Promise<User[]> {
+    return this.usersService.findAll();
+  }
 ```
 
-## Support
+To send an authenticated request in the GraphQL playground, you can use the JWT that was returned after loggin in.
+Add this to the HTTP Headers.  
+**Remove the "<>"**.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```json
+{
+  "Authorization": "Bearer <your token>"
+}
+```
 
-## Stay in touch
+## Role Guards
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The protect an API route from a specific user Role, you can use a **Roles** guard. This guard checks if the user has the correct roles to access the specified route.
+In this example the findAll users query inside the `users.resolver.ts` file is protected using this guard.  
+Only a user with the ADMIN role can access this endpoint.
 
-## License
-
-Nest is [MIT licensed](LICENSE).
+```js
+  @Query(() => [User], { name: 'users' })
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  findAll(): Promise<User[]> {
+    return this.usersService.findAll();
+  }
+```

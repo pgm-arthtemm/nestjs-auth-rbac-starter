@@ -25,6 +25,8 @@ const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
+    // Add your database connection here
+    // This example uses TypeORM with a postgres database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
