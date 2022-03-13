@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { CreateUserInput } from 'src/users/dto/create-user.input';
-import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { CreateUserInput } from 'src/users/dto/create-user.input';
+import { LoginUserInput } from './dto/login-user.input';
 
 @Injectable()
 export class AuthService {
@@ -12,40 +12,44 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
-    const valid = user && (await bcrypt.compare(password, user.password));
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findOne(email);
+    const valid = user && (await bcrypt.compare(password, user?.password));
 
     if (user && valid) {
       const { password, ...result } = user;
       return result;
     }
+
+    return null;
   }
 
-  async login(user: User) {
+  async login(loginUserInput: LoginUserInput) {
+    const user = await this.usersService.findOne(loginUserInput.email);
     const { password, ...result } = user;
 
     return {
-      accessToken: this.jwtService.sign({
-        username: user.username,
+      access_token: this.jwtService.sign({
+        email: user.email,
         sub: user.id,
+        role: user.role,
       }),
       user: result,
     };
   }
 
-  async signUp(signUpUserInput: CreateUserInput) {
-    const user = await this.usersService.findByEmail(signUpUserInput.email);
+  async signup(signupUserInput: CreateUserInput) {
+    const user = await this.usersService.findOne(signupUserInput.email);
 
     if (user) {
       throw new Error('User already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(signUpUserInput.password, 10);
+    const password = await bcrypt.hash(signupUserInput.password, 10);
 
     return this.usersService.create({
-      ...signUpUserInput,
-      password: hashedPassword,
+      ...signupUserInput,
+      password,
     });
   }
 }
