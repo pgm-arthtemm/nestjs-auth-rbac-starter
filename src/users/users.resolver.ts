@@ -12,8 +12,13 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+  // Example of a query that requires a JWT token and a role of ADMIN
   @Query(() => [User], { name: 'users' })
+  // Make sure to add RolesGuard to the @UseGuards() decorator
   @UseGuards(JwtAuthGuard, RolesGuard)
+  // Create roles in enums/roles.enum.ts
+  // Import the enum
+  // Add the right roles to the @Roles() decorator
   @Roles(Role.ADMIN)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
