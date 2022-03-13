@@ -10,16 +10,16 @@ export class UsersService {
     @InjectRepository(User) private usersRespository: Repository<User>,
   ) {}
 
+  findAll(): Promise<User[]> {
+    return this.usersRespository.find();
+  }
+
+  findOne(email: string): Promise<User> {
+    return this.usersRespository.findOne({ email });
+  }
+
   create(createUserInput: CreateUserInput) {
     const user = this.usersRespository.create(createUserInput);
     return this.usersRespository.save(user);
-  }
-
-  findOne(username: string): Promise<User> {
-    return this.usersRespository.findOne({ username });
-  }
-
-  findByEmail(email: string): Promise<User> {
-    return this.usersRespository.findOne({ email });
   }
 }

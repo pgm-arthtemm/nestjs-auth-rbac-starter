@@ -9,24 +9,24 @@ input CreateUserInput {
 }
 
 type LoginResponse {
-  accessToken: String!
+  access_token: String!
   user: User!
 }
 
 input LoginUserInput {
+  email: String!
   password: String!
-  username: String!
 }
 
 type Mutation {
   create(createUserInput: CreateUserInput!): User!
   login(loginUserInput: LoginUserInput!): LoginResponse!
-  signUp(signUpUserInput: CreateUserInput!): User!
+  signup(signupUserInput: CreateUserInput!): User!
 }
 
 type Query {
-  user(username: String!): User!
-  userByEmail(email: String!): User!
+  user(email: String!): User!
+  users: [User!]!
 }
 
 type User {
